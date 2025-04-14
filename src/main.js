@@ -14,6 +14,8 @@ const spanPuntos = document.getElementById("puntaje");
 const spanIntentos = document.getElementById("intentos");
 const imgCarta = document.getElementById("imgCarta");
 const divCartas = document.getElementById("misCartas");
+const btnDameCarta = document.getElementById("btnDameCarta");
+const btnMePlanto = document.getElementById("btnMePlanto");
 
 var puntaje = 0;
 var intentos = 0;
@@ -27,18 +29,105 @@ function inicializar(){
     muestraIntentos(intentos);
 }
 
-function muestraPunt(punt){
-    spanPuntos.innerText = punt;
-}
-
 function muestraIntentos(inten){
     spanIntentos.innerText = inten;
 }
 
-function dameCarta(){
-    let numCarta = Math.floor(Math.random() * 10) + 1;
-    //console.log(numCarta);
+function obtenerNumRandom(){
+    return Math.floor(Math.random() * 10) + 1;
+}
+
+function obtenerNumCarta(numRandom){
+    if (numRandom > 7) {
+        return numRandom + 2;
+    }
+
+    return numRandom;
+}
+
+function obtenerUrlCarta(numCarta){
     switch(numCarta){
+        case 1:
+            return imgAsCopas;
+        case 2:
+            return img2copas;
+        case 3:
+            return img3copas;
+        case 4:
+            return img4copas;
+        case 5:
+            return img5copas;
+        case 6:
+            return img6copas;
+        case 7:
+            return img7copas;
+        case 10:
+            return imgSotacopas;
+        case 11:
+            return imgCabcopas;
+        case 12:
+            return imgReycopas;
+        /*default:
+            console.log(imgCarta.src)*/
+    }
+}
+
+function mostrarUrlCarta(url){
+    imgCarta.src = url;
+    divCartas.innerHTML += `<img src="${url}" alt="Imagen No Encontrada">`;
+    setTimeout(() => {
+        imgCarta.src = imgBack;
+    }, 700);  // 700 milisegundos = 0.7 segundos
+}
+
+function obtenerPuntosCarta(carta){
+    if (carta > 7) {
+        return 0.5;
+    }
+
+    return carta;
+}
+
+function sumarPuntos(num){
+    puntaje = parseFloat(puntaje) + num;
+}
+
+function muestraPunt(punt){
+    spanPuntos.innerText = punt;
+}
+
+function revisarPartida(){
+    if (puntaje > 7.5){
+        alert(`Game Over, tu puntaje es de ${puntaje}...`);
+        intentos = parseInt(intentos) + 1;
+        inicializar();
+    } else if (puntaje === 7.5){
+        partidaGanada();
+    }
+}
+
+function partidaGanada(){
+    if (intentos === 0){intentos = parseInt(intentos) + 1;}
+    if (intentos === 1){
+        alert(`¡Lo has clavado! ¡Enhorabuena! Has necesitado de ${intentos} intento para ganar la partida.`);
+    } else {
+        alert(`¡Lo has clavado! ¡Enhorabuena! Has necesitado de ${intentos} intentos para ganar la partida.`);
+    }
+    intentos = 0;
+}
+
+function dameCarta(){
+    //console.log(numCarta);
+    //obtenerUrlCarta(obtenerNumCarta(obtenerNumRandom()));
+    const carta = obtenerNumCarta(obtenerNumRandom());
+    const urlCarta = obtenerUrlCarta(carta);
+    mostrarUrlCarta(urlCarta);
+    const punto = obtenerPuntosCarta(carta);
+    sumarPuntos(punto);
+    muestraPunt(puntaje);
+    revisarPartida();
+
+    /*switch(numCarta){
         case 1:
             imgCarta.src = imgAsCopas;
             puntaje = parseFloat(puntaje) + 1;
@@ -90,17 +179,12 @@ function dameCarta(){
             divCartas.innerHTML += `<img src="${imgReycopas}" alt="Imagen No Encontrada">`;
             break;
         /*default:
-            console.log(imgCarta.src)*/
+            console.log(imgCarta.src)
     }
     setTimeout(() => {
         imgCarta.src = imgBack;
     }, 700);  // 700 milisegundos = 0.7 segundos
-    muestraPunt(puntaje);
-    if (puntaje > 7.5){
-        alert(`Game Over, tu puntaje es de ${puntaje}...`);
-        intentos = parseInt(intentos) + 1;
-        inicializar();
-    }
+    */
     //console.log(puntaje);
 }
 
@@ -116,13 +200,18 @@ function mePlanto(){
         intentos = parseInt(intentos) + 1;
         alert("Casi casi...");
     } else if (puntaje === 7.5){
-        if (intentos === 0){intentos = parseInt(intentos) + 1;}
-        if (intentos === 1){
-            alert(`¡Lo has clavado! ¡Enhorabuena! Has necesitado de ${intentos} intento para ganar la partida.`);
-        } else {
-            alert(`¡Lo has clavado! ¡Enhorabuena! Has necesitado de ${intentos} intentos para ganar la partida.`);
-        }
-        intentos = 0;
+        partidaGanada();
     }
     inicializar();
+}
+
+if (btnDameCarta !== null && btnDameCarta !== undefined) {
+    btnDameCarta.addEventListener('click', () => {
+        dameCarta();
+    })
+}
+if (btnMePlanto !== null && btnMePlanto !== undefined){
+    btnMePlanto.addEventListener('click', () => {
+        mePlanto();
+    })
 }
